@@ -143,7 +143,7 @@
           <div class="score-box"><span>错误</span><strong id="mistakes">0</strong></div>
         </div>
       </section>
-      <p>选择空格后输入数字，填满并全部正确即可完成。</p>
+      <p>选择空格后输入数字，全部填完后点击验证。</p>
       <select id="difficulty" onchange="newGame()" aria-label="选择难度">
         <option value="easy">简单</option>
         <option value="medium">中等</option>
@@ -163,6 +163,7 @@
       </section>
       <p class="status" id="status">游戏加载中...</p>
       <section class="actions">
+        <button type="button" onclick="verifyBoard()">验证</button>
         <button type="button" onclick="newGame()">新游戏</button>
         <a class="home-link" href="/myblog/">返回首页</a>
       </section>
@@ -198,6 +199,7 @@
     var solution = '';
     var selected = -1;
     var mistakes = 0;
+    var errors = [];
     var seconds = 0;
     var timer = null;
     var finished = false;
@@ -220,6 +222,7 @@
       solution = item.solution;
       selected = -1;
       mistakes = 0;
+      errors = [];
       seconds = 0;
       finished = false;
       for (var i = 0; i < 81; i++) {
@@ -243,7 +246,7 @@
         if (fixed[i]) cls += ' fixed';
         if (i === selected) cls += ' selected';
         else if (selected >= 0 && related(i, selected)) cls += ' related';
-        if (!fixed[i] && board[i] && board[i] !== solution.charAt(i)) cls += ' error';
+        if (errors[i]) cls += ' error';
         html += '<div class="' + cls + '" onclick="selectCell(' + i + ')">' + board[i] + '</div>';
       }
       document.getElementById('board').innerHTML = html;
@@ -265,33 +268,47 @@
 
     function putNumber(num) {
       if (selected < 0 || fixed[selected] || finished) return;
-      var value = String(num);
-      board[selected] = value;
-      if (value !== solution.charAt(selected)) {
-        mistakes++;
-        document.getElementById('mistakes').innerHTML = String(mistakes);
-        document.getElementById('status').innerHTML = '这个数字不太对，再试试。';
-      } else {
-        document.getElementById('status').innerHTML = '填写正确，继续加油。';
-      }
+      board[selected] = String(num);
+      errors = [];
+      document.getElementById('mistakes').innerHTML = '0';
+      document.getElementById('status').innerHTML = '继续填写，完成后点击验证。';
       draw();
-      checkComplete();
     }
 
     function clearCell() {
       if (selected < 0 || fixed[selected] || finished) return;
       board[selected] = '';
-      document.getElementById('status').innerHTML = '已清除当前格子。';
+      errors = [];
+      document.getElementById('mistakes').innerHTML = '0';
+      document.getElementById('status').innerHTML = '已清除当前格子，完成后点击验证。';
       draw();
     }
 
-    function checkComplete() {
+    function verifyBoard() {
+      if (finished) return;
+      errors = [];
+      mistakes = 0;
       for (var i = 0; i < 81; i++) {
-        if (board[i] !== solution.charAt(i)) return;
+        if (!board[i]) {
+          document.getElementById('status').innerHTML = '还有空格没有填写，填完后再验证。';
+          document.getElementById('mistakes').innerHTML = '0';
+          draw();
+          return;
+        }
+        if (board[i] !== solution.charAt(i)) {
+          errors[i] = true;
+          mistakes++;
+        }
       }
-      finished = true;
-      clearInterval(timer);
-      document.getElementById('status').innerHTML = '完成！用时 ' + document.getElementById('time').innerHTML + '，错误 ' + mistakes + ' 次。';
+      document.getElementById('mistakes').innerHTML = String(mistakes);
+      if (mistakes === 0) {
+        finished = true;
+        clearInterval(timer);
+        document.getElementById('status').innerHTML = '全部正确！用时 ' + document.getElementById('time').innerHTML + '。';
+      } else {
+        document.getElementById('status').innerHTML = '有 ' + mistakes + ' 个错误，红色格子需要修改。';
+      }
+      draw();
     }
 
     document.onkeydown = function(event) {
