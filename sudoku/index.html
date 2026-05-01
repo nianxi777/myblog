@@ -46,8 +46,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8fafc;
-      color: #2f4154;
+      background: #f7fbff;
+      color: #1f3144;
       box-shadow: inset 0 0 0 1px rgba(47, 65, 84, .28);
       font-size: clamp(20px, 6vw, 34px);
       font-weight: 800;
@@ -56,11 +56,11 @@
     .cell.block-right { box-shadow: inset -3px 0 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
     .cell.block-bottom { box-shadow: inset 0 -3px 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
     .cell.block-right.block-bottom { box-shadow: inset -3px 0 0 #2f4154, inset 0 -3px 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
-    .cell.fixed { color: #fff; background: #2f4154; }
-    .cell.selected { background: #30a9de; color: #fff; }
-    .cell.related { background: #e2e8f0; }
-    .cell.error { color: #fff; background: #c95f6a; }
-    .cell.hint { color: #fff; background: #238fc1; }
+    .cell.fixed { color: #fff; background: #1f3144; }
+    .cell.selected { background: #f6c85f; color: #1f3144; }
+    .cell.related { background: #d8e6f3; color: #1f3144; }
+    .cell.error { color: #fff; background: #b42335; }
+    .cell.hint { color: #fff; background: #0b6f9f; }
     .side-panel { display: flex; flex-direction: column; gap: 12px; }
     .topbar { display: flex; flex-direction: column; gap: 10px; }
     h1 {
@@ -80,7 +80,7 @@
     .score-box span { display: block; font-size: 12px; opacity: .85; }
     .score-box strong { font-size: 20px; }
     p { margin: 0; line-height: 1.45; color: #2f4154; font-size: 14px; }
-    select, button, .home-link {
+    button, .home-link {
       border: 0;
       border-radius: 10px;
       padding: 8px 12px;
@@ -93,8 +93,8 @@
       font-family: inherit;
       transition: background .2s ease, transform .2s ease;
     }
-    select { width: 100%; appearance: none; }
-    button:hover, .home-link:hover, select:hover { background: #30a9de; transform: translateY(-1px); }
+    button:hover, .home-link:hover { background: #30a9de; transform: translateY(-1px); }
+    button.active { color: #1f3144; background: #f6c85f; }
     .numbers {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -102,7 +102,7 @@
     }
     .numbers button { height: 38px; padding: 0; font-size: 18px; }
     .status { min-height: 44px; margin: 0; font-weight: 700; color: #2f4154; }
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions, .difficulty-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 760px) {
       body { padding: 10px; }
       .game-wrap { width: min(96vw, 430px); display: block; }
@@ -114,7 +114,7 @@
       .numbers { grid-template-columns: repeat(5, 1fr); }
       .numbers button { height: 34px; }
       .status { min-height: 22px; text-align: center; }
-      .actions { grid-template-columns: 1fr 1fr; }
+      .actions, .difficulty-buttons { grid-template-columns: 1fr 1fr; }
     }
     @media (max-height: 700px) {
       body { padding: 8px; }
@@ -144,11 +144,6 @@
         </div>
       </section>
       <p>选择空格后输入数字，全部填完后点击验证。</p>
-      <select id="difficulty" onchange="newGame()" aria-label="选择难度">
-        <option value="easy">简单</option>
-        <option value="medium">中等</option>
-        <option value="hard">困难</option>
-      </select>
       <section class="numbers" aria-label="数字输入">
         <button type="button" onclick="putNumber(1)">1</button>
         <button type="button" onclick="putNumber(2)">2</button>
@@ -165,6 +160,11 @@
       <section class="actions">
         <button type="button" onclick="verifyBoard()">验证</button>
         <button type="button" onclick="newGame()">新游戏</button>
+      </section>
+      <section class="difficulty-buttons" aria-label="难度选择">
+        <button type="button" id="easyBtn" class="active" onclick="setDifficulty('easy')">简单</button>
+        <button type="button" id="mediumBtn" onclick="setDifficulty('medium')">中等</button>
+        <button type="button" id="hardBtn" onclick="setDifficulty('hard')">困难</button>
         <a class="home-link" href="/myblog/">返回首页</a>
       </section>
     </aside>
@@ -197,6 +197,7 @@
     var board = [];
     var fixed = [];
     var solution = '';
+    var currentDifficulty = 'easy';
     var selected = -1;
     var mistakes = 0;
     var errors = [];
@@ -213,9 +214,16 @@
       document.getElementById('time').innerHTML = pad(Math.floor(seconds / 60)) + ':' + pad(seconds % 60);
     }
 
+    function setDifficulty(level) {
+      currentDifficulty = level;
+      document.getElementById('easyBtn').className = level === 'easy' ? 'active' : '';
+      document.getElementById('mediumBtn').className = level === 'medium' ? 'active' : '';
+      document.getElementById('hardBtn').className = level === 'hard' ? 'active' : '';
+      newGame();
+    }
+
     function newGame() {
-      var level = document.getElementById('difficulty').value;
-      var list = puzzles[level];
+      var list = puzzles[currentDifficulty];
       var item = list[Math.floor(Math.random() * list.length)];
       board = [];
       fixed = [];
