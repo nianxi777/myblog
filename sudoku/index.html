@@ -94,7 +94,6 @@
       transition: background .2s ease, transform .2s ease;
     }
     button:hover, .home-link:hover { background: #30a9de; transform: translateY(-1px); }
-    button.active { color: #1f3144; background: #f6c85f; }
     .numbers {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -102,7 +101,7 @@
     }
     .numbers button { height: 38px; padding: 0; font-size: 18px; }
     .status { min-height: 44px; margin: 0; font-weight: 700; color: #2f4154; }
-    .actions, .difficulty-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 760px) {
       body { padding: 10px; }
       .game-wrap { width: min(96vw, 430px); display: block; }
@@ -114,7 +113,7 @@
       .numbers { grid-template-columns: repeat(5, 1fr); }
       .numbers button { height: 34px; }
       .status { min-height: 22px; text-align: center; }
-      .actions, .difficulty-buttons { grid-template-columns: 1fr 1fr; }
+      .actions { grid-template-columns: 1fr 1fr; }
     }
     @media (max-height: 700px) {
       body { padding: 8px; }
@@ -160,11 +159,7 @@
       <section class="actions">
         <button type="button" onclick="verifyBoard()">验证</button>
         <button type="button" onclick="newGame()">新游戏</button>
-      </section>
-      <section class="difficulty-buttons" aria-label="难度选择">
-        <button type="button" id="easyBtn" class="active" onclick="setDifficulty('easy')">简单</button>
-        <button type="button" id="mediumBtn" onclick="setDifficulty('medium')">中等</button>
-        <button type="button" id="hardBtn" onclick="setDifficulty('hard')">困难</button>
+        <button type="button" id="difficultyBtn" onclick="cycleDifficulty()">难度：简单</button>
         <a class="home-link" href="/myblog/">返回首页</a>
       </section>
     </aside>
@@ -214,11 +209,17 @@
       document.getElementById('time').innerHTML = pad(Math.floor(seconds / 60)) + ':' + pad(seconds % 60);
     }
 
-    function setDifficulty(level) {
-      currentDifficulty = level;
-      document.getElementById('easyBtn').className = level === 'easy' ? 'active' : '';
-      document.getElementById('mediumBtn').className = level === 'medium' ? 'active' : '';
-      document.getElementById('hardBtn').className = level === 'hard' ? 'active' : '';
+    function difficultyName(level) {
+      if (level === 'medium') return '中等';
+      if (level === 'hard') return '困难';
+      return '简单';
+    }
+
+    function cycleDifficulty() {
+      if (currentDifficulty === 'easy') currentDifficulty = 'medium';
+      else if (currentDifficulty === 'medium') currentDifficulty = 'hard';
+      else currentDifficulty = 'easy';
+      document.getElementById('difficultyBtn').innerHTML = '难度：' + difficultyName(currentDifficulty);
       newGame();
     }
 
