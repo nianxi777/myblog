@@ -22,16 +22,25 @@
       background: linear-gradient(135deg, #eef2f7, #dbe6f1);
     }
     .game-wrap {
-      width: min(96vw, 430px);
+      width: min(96vw, 760px);
       max-height: calc(100vh - 24px);
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 230px;
+      gap: 18px;
+      align-items: center;
+    }
+    .board-panel { min-width: 0; }
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .topbar {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
     h1 {
       margin: 0;
@@ -39,10 +48,10 @@
       line-height: 1;
       color: #2f4154;
     }
-    .scores { display: flex; gap: 8px; }
+    .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
     .score-box {
-      min-width: 68px;
-      padding: 6px 9px;
+      min-width: 0;
+      padding: 7px 9px;
       border-radius: 10px;
       text-align: center;
       color: #fff;
@@ -52,13 +61,12 @@
     .score-box strong { font-size: 20px; }
     .intro {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
       gap: 10px;
-      margin-bottom: 10px;
       color: #2f4154;
     }
-    .intro p { margin: 0; line-height: 1.35; font-size: 14px; }
+    .intro p { margin: 0; line-height: 1.45; font-size: 14px; }
     button, .home-link {
       border: 0;
       border-radius: 10px;
@@ -79,8 +87,8 @@
     .board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: min(2vw, 8px);
-      padding: min(2vw, 8px);
+      gap: min(1.7vw, 9px);
+      padding: min(1.7vw, 9px);
       border-radius: 16px;
       background: #2f4154;
       touch-action: none;
@@ -118,10 +126,10 @@
     .tile-1024 span, .tile-2048 span { font-size: clamp(20px, 5vw, 25px); }
     .controls {
       display: grid;
-      grid-template-columns: repeat(3, 52px);
+      grid-template-columns: repeat(3, 58px);
       justify-content: center;
       gap: 6px;
-      margin: 10px 0 6px;
+      margin: 0;
     }
     .controls button { height: 38px; padding: 0; font-size: 20px; }
     .controls .up { grid-column: 2; }
@@ -129,59 +137,97 @@
     .controls .down { grid-column: 2; }
     .controls .right { grid-column: 3; }
     .status {
-      min-height: 22px;
-      margin: 8px 0;
-      text-align: center;
+      min-height: 44px;
+      margin: 0;
+      text-align: left;
       font-weight: 700;
       color: #2f4154;
     }
     .actions {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       gap: 10px;
-      flex-wrap: wrap;
+    }
+    .actions .home-link,
+    .actions button,
+    .intro button {
+      text-align: center;
+      width: 100%;
+    }
+    @media (max-width: 700px) {
+      body { padding: 10px; }
+      .game-wrap {
+        width: min(96vw, 430px);
+        display: block;
+      }
+      .side-panel { gap: 8px; }
+      .topbar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .scores { width: auto; }
+      .score-box { min-width: 64px; padding: 5px 8px; }
+      .intro {
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .intro button { width: auto; }
+      .controls { margin: 8px 0 6px; grid-template-columns: repeat(3, 52px); }
+      .status { min-height: 22px; margin: 6px 0; text-align: center; }
+      .actions { flex-direction: row; justify-content: center; }
+      .actions .home-link,
+      .actions button { width: auto; }
     }
     @media (max-width: 420px) {
-      body { padding: 10px; }
       .topbar { align-items: flex-start; }
-      .scores { flex-direction: column; gap: 5px; }
-      .score-box { padding: 5px 8px; }
+      .scores { grid-template-columns: 1fr; gap: 5px; width: 72px; }
       .intro p { font-size: 13px; }
     }
     @media (max-height: 700px) {
       body { padding: 8px; }
-      .game-wrap { width: min(92vw, 380px); }
+      .game-wrap { width: min(96vw, 700px); grid-template-columns: minmax(300px, 1fr) 210px; gap: 12px; }
+      h1 { font-size: 38px; }
+      .side-panel { gap: 8px; }
       .intro p { font-size: 12px; }
-      .controls { margin-top: 6px; }
       .actions { display: none; }
+    }
+    @media (max-width: 700px) and (max-height: 700px) {
+      .game-wrap { width: min(92vw, 380px); display: block; }
     }
   </style>
 </head>
 <body>
   <main class="game-wrap">
-    <section class="topbar">
-      <h1>2048</h1>
-      <div class="scores">
-        <div class="score-box"><span>分数</span><strong id="score">0</strong></div>
-        <div class="score-box"><span>最高</span><strong id="best">0</strong></div>
-      </div>
+    <section class="board-panel">
+      <section class="board" id="board" aria-label="2048 游戏棋盘"></section>
     </section>
-    <section class="intro">
-      <p>用方向键、WASD、滑动或下面按钮移动方块。</p>
-      <button type="button" onclick="newGame()">新游戏</button>
-    </section>
-    <section class="board" id="board" aria-label="2048 游戏棋盘"></section>
-    <section class="controls" aria-label="方向控制">
-      <button type="button" class="up" onclick="move('up')">↑</button>
-      <button type="button" class="left" onclick="move('left')">←</button>
-      <button type="button" class="down" onclick="move('down')">↓</button>
-      <button type="button" class="right" onclick="move('right')">→</button>
-    </section>
-    <p class="status" id="status">游戏加载中...</p>
-    <section class="actions">
-      <a class="home-link" href="/myblog/">返回首页</a>
-      <button type="button" onclick="newGame()">重新开始</button>
-    </section>
+    <aside class="side-panel">
+      <section class="topbar">
+        <h1>2048</h1>
+        <div class="scores">
+          <div class="score-box"><span>分数</span><strong id="score">0</strong></div>
+          <div class="score-box"><span>最高</span><strong id="best">0</strong></div>
+        </div>
+      </section>
+      <section class="intro">
+        <p>用方向键、WASD、滑动或按钮移动方块。</p>
+        <button type="button" onclick="newGame()">新游戏</button>
+      </section>
+      <section class="controls" aria-label="方向控制">
+        <button type="button" class="up" onclick="move('up')">↑</button>
+        <button type="button" class="left" onclick="move('left')">←</button>
+        <button type="button" class="down" onclick="move('down')">↓</button>
+        <button type="button" class="right" onclick="move('right')">→</button>
+      </section>
+      <p class="status" id="status">游戏加载中...</p>
+      <section class="actions">
+        <a class="home-link" href="/myblog/">返回首页</a>
+        <button type="button" onclick="newGame()">重新开始</button>
+      </section>
+    </aside>
   </main>
   <script>
     var size = 4;
