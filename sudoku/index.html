@@ -30,6 +30,7 @@
     .board {
       display: grid;
       grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
       aspect-ratio: 1;
       border: 4px solid #2f4154;
       border-radius: 16px;
@@ -40,19 +41,21 @@
       user-select: none;
     }
     .cell {
+      min-width: 0;
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(47, 65, 84, .32);
       background: #f8fafc;
       color: #2f4154;
+      box-shadow: inset 0 0 0 1px rgba(47, 65, 84, .28);
       font-size: clamp(20px, 6vw, 34px);
       font-weight: 800;
       cursor: pointer;
     }
-    .cell:nth-child(3n) { border-right-width: 3px; }
-    .cell:nth-child(9n) { border-right-width: 1px; }
-    .cell:nth-child(n+19):nth-child(-n+27), .cell:nth-child(n+46):nth-child(-n+54) { border-bottom-width: 3px; }
+    .cell.block-right { box-shadow: inset -3px 0 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
+    .cell.block-bottom { box-shadow: inset 0 -3px 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
+    .cell.block-right.block-bottom { box-shadow: inset -3px 0 0 #2f4154, inset 0 -3px 0 #2f4154, inset 0 0 0 1px rgba(47, 65, 84, .28); }
     .cell.fixed { color: #fff; background: #2f4154; }
     .cell.selected { background: #30a9de; color: #fff; }
     .cell.related { background: #e2e8f0; }
@@ -181,20 +184,12 @@
         {
           puzzle: '000260701680070090190004500820100040004602900050003028009300074040050036703018000',
           solution: '435269781682571493197834562826195347374682915951743628519326874248957136763418259'
-        },
-        {
-          puzzle: '300000000005009000200504000020000700160000058704310600000890100000067080000005437',
-          solution: '397681245645729813281534976823956741169472358754318629536897124412763589978245437'
         }
       ],
       hard: [
         {
           puzzle: '000000010400000000020000000000050407008000300001090000300400200050100000000806000',
           solution: '693784512487512936125963874932651487568247391741398625319475268856129743274836159'
-        },
-        {
-          puzzle: '000900002050123400030000160908000000070000090000000205091000080007439020400007000',
-          solution: '614978532759123468832645179948352617275816394163794285391264857527439621486587913'
         }
       ]
     };
@@ -243,10 +238,12 @@
       var html = '';
       for (var i = 0; i < 81; i++) {
         var cls = 'cell';
+        if (i % 9 === 2 || i % 9 === 5) cls += ' block-right';
+        if (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) cls += ' block-bottom';
         if (fixed[i]) cls += ' fixed';
         if (i === selected) cls += ' selected';
         else if (selected >= 0 && related(i, selected)) cls += ' related';
-        if (board[i] && board[i] !== solution.charAt(i)) cls += ' error';
+        if (!fixed[i] && board[i] && board[i] !== solution.charAt(i)) cls += ' error';
         html += '<div class="' + cls + '" onclick="selectCell(' + i + ')">' + board[i] + '</div>';
       }
       document.getElementById('board').innerHTML = html;
