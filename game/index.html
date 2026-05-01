@@ -12,7 +12,7 @@
       padding: 20px;
       font-family: Arial, "Microsoft YaHei", sans-serif;
       color: #3c4858;
-      background: linear-gradient(135deg, #f7efe5, #e8f0ff);
+      background: linear-gradient(135deg, #eef2f7, #dbe6f1);
     }
     .game-wrap {
       width: 100%;
@@ -31,7 +31,7 @@
       margin: 0;
       font-size: 54px;
       line-height: 1;
-      color: #776e65;
+      color: #2f4154;
     }
     .scores { display: flex; gap: 8px; }
     .score-box {
@@ -40,7 +40,7 @@
       border-radius: 10px;
       text-align: center;
       color: #fff;
-      background: #bbada0;
+      background: #2f4154;
     }
     .score-box span { display: block; font-size: 12px; opacity: .85; }
     .score-box strong { font-size: 22px; }
@@ -50,7 +50,7 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 16px;
-      color: #776e65;
+      color: #2f4154;
     }
     .intro p { margin: 0; line-height: 1.6; }
     button, .home-link {
@@ -60,10 +60,15 @@
       cursor: pointer;
       font-weight: 700;
       color: #fff;
-      background: #8f7a66;
+      background: #2f4154;
       text-decoration: none;
       white-space: nowrap;
       font-family: inherit;
+      transition: background .2s ease, transform .2s ease;
+    }
+    button:hover, .home-link:hover {
+      background: #30a9de;
+      transform: translateY(-1px);
     }
     .board {
       display: grid;
@@ -71,7 +76,7 @@
       gap: 10px;
       padding: 10px;
       border-radius: 16px;
-      background: #bbada0;
+      background: #2f4154;
       touch-action: none;
       user-select: none;
     }
@@ -80,8 +85,8 @@
       width: 100%;
       padding-top: 100%;
       border-radius: 10px;
-      background: rgba(238, 228, 218, .35);
-      color: #776e65;
+      background: rgba(255, 255, 255, .18);
+      color: #2f4154;
       font-weight: 800;
     }
     .cell span {
@@ -92,17 +97,17 @@
       justify-content: center;
       font-size: 38px;
     }
-    .tile-2 { background: #eee4da; }
-    .tile-4 { background: #ede0c8; }
-    .tile-8 { color: #f9f6f2; background: #f2b179; }
-    .tile-16 { color: #f9f6f2; background: #f59563; }
-    .tile-32 { color: #f9f6f2; background: #f67c5f; }
-    .tile-64 { color: #f9f6f2; background: #f65e3b; }
-    .tile-128 { color: #f9f6f2; background: #edcf72; }
-    .tile-256 { color: #f9f6f2; background: #edcc61; }
-    .tile-512 { color: #f9f6f2; background: #edc850; }
-    .tile-1024 { color: #f9f6f2; background: #edc53f; }
-    .tile-2048 { color: #f9f6f2; background: #edc22e; }
+    .tile-2 { background: #f8f9fa; }
+    .tile-4 { background: #eaecef; }
+    .tile-8 { color: #fff; background: #718096; }
+    .tile-16 { color: #fff; background: #5b7088; }
+    .tile-32 { color: #fff; background: #4b6078; }
+    .tile-64 { color: #fff; background: #3c526b; }
+    .tile-128 { color: #fff; background: #30a9de; }
+    .tile-256 { color: #fff; background: #278fc0; }
+    .tile-512 { color: #fff; background: #1f789f; }
+    .tile-1024 { color: #fff; background: #1f3144; }
+    .tile-2048 { color: #fff; background: #2f4154; }
     .tile-128 span, .tile-256 span, .tile-512 span { font-size: 32px; }
     .tile-1024 span, .tile-2048 span { font-size: 26px; }
     .controls {
@@ -122,7 +127,7 @@
       margin: 12px 0;
       text-align: center;
       font-weight: 700;
-      color: #776e65;
+      color: #2f4154;
     }
     .actions {
       display: flex;
