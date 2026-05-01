@@ -6,57 +6,63 @@
   <title>2048 - 溪_</title>
   <style>
     * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 20px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: Arial, "Microsoft YaHei", sans-serif;
       color: #3c4858;
       background: linear-gradient(135deg, #eef2f7, #dbe6f1);
     }
     .game-wrap {
-      width: 100%;
-      max-width: 460px;
+      width: min(96vw, 430px);
+      max-height: calc(100vh - 24px);
       margin: 0 auto;
-      padding-top: 20px;
     }
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
     h1 {
       margin: 0;
-      font-size: 54px;
+      font-size: clamp(38px, 8vh, 50px);
       line-height: 1;
       color: #2f4154;
     }
     .scores { display: flex; gap: 8px; }
     .score-box {
-      min-width: 72px;
-      padding: 8px 10px;
+      min-width: 68px;
+      padding: 6px 9px;
       border-radius: 10px;
       text-align: center;
       color: #fff;
       background: #2f4154;
     }
     .score-box span { display: block; font-size: 12px; opacity: .85; }
-    .score-box strong { font-size: 22px; }
+    .score-box strong { font-size: 20px; }
     .intro {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 10px;
       color: #2f4154;
     }
-    .intro p { margin: 0; line-height: 1.6; }
+    .intro p { margin: 0; line-height: 1.35; font-size: 14px; }
     button, .home-link {
       border: 0;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       cursor: pointer;
       font-weight: 700;
       color: #fff;
@@ -73,8 +79,8 @@
     .board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 10px;
+      gap: min(2vw, 8px);
+      padding: min(2vw, 8px);
       border-radius: 16px;
       background: #2f4154;
       touch-action: none;
@@ -95,36 +101,36 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
+      font-size: clamp(26px, 7vw, 36px);
     }
-    .tile-2 { background: #f8f9fa; }
-    .tile-4 { background: #eaecef; }
-    .tile-8 { color: #fff; background: #718096; }
-    .tile-16 { color: #fff; background: #5b7088; }
-    .tile-32 { color: #fff; background: #4b6078; }
-    .tile-64 { color: #fff; background: #3c526b; }
+    .tile-2 { background: #f8fafc; }
+    .tile-4 { background: #e2e8f0; }
+    .tile-8 { color: #fff; background: #a7b4c4; }
+    .tile-16 { color: #fff; background: #8798ad; }
+    .tile-32 { color: #fff; background: #687d96; }
+    .tile-64 { color: #fff; background: #506982; }
     .tile-128 { color: #fff; background: #30a9de; }
-    .tile-256 { color: #fff; background: #278fc0; }
-    .tile-512 { color: #fff; background: #1f789f; }
-    .tile-1024 { color: #fff; background: #1f3144; }
-    .tile-2048 { color: #fff; background: #2f4154; }
-    .tile-128 span, .tile-256 span, .tile-512 span { font-size: 32px; }
-    .tile-1024 span, .tile-2048 span { font-size: 26px; }
+    .tile-256 { color: #fff; background: #238fc1; }
+    .tile-512 { color: #fff; background: #17759f; }
+    .tile-1024 { color: #fff; background: #24506f; }
+    .tile-2048 { color: #fff; background: #1f3144; }
+    .tile-128 span, .tile-256 span, .tile-512 span { font-size: clamp(23px, 6vw, 30px); }
+    .tile-1024 span, .tile-2048 span { font-size: clamp(20px, 5vw, 25px); }
     .controls {
       display: grid;
-      grid-template-columns: repeat(3, 58px);
+      grid-template-columns: repeat(3, 52px);
       justify-content: center;
-      gap: 8px;
-      margin: 16px 0 8px;
+      gap: 6px;
+      margin: 10px 0 6px;
     }
-    .controls button { height: 46px; padding: 0; font-size: 22px; }
+    .controls button { height: 38px; padding: 0; font-size: 20px; }
     .controls .up { grid-column: 2; }
     .controls .left { grid-column: 1; }
     .controls .down { grid-column: 2; }
     .controls .right { grid-column: 3; }
     .status {
-      min-height: 26px;
-      margin: 12px 0;
+      min-height: 22px;
+      margin: 8px 0;
       text-align: center;
       font-weight: 700;
       color: #2f4154;
@@ -136,13 +142,18 @@
       flex-wrap: wrap;
     }
     @media (max-width: 420px) {
-      body { padding: 14px; }
-      h1 { font-size: 44px; }
+      body { padding: 10px; }
       .topbar { align-items: flex-start; }
-      .scores { flex-direction: column; }
-      .cell span { font-size: 30px; }
-      .tile-128 span, .tile-256 span, .tile-512 span { font-size: 25px; }
-      .tile-1024 span, .tile-2048 span { font-size: 21px; }
+      .scores { flex-direction: column; gap: 5px; }
+      .score-box { padding: 5px 8px; }
+      .intro p { font-size: 13px; }
+    }
+    @media (max-height: 700px) {
+      body { padding: 8px; }
+      .game-wrap { width: min(92vw, 380px); }
+      .intro p { font-size: 12px; }
+      .controls { margin-top: 6px; }
+      .actions { display: none; }
     }
   </style>
 </head>
