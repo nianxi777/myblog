@@ -9,21 +9,23 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
       color: #3c4858;
       background: linear-gradient(135deg, #f7efe5, #e8f0ff);
     }
-    .game-wrap { width: min(92vw, 460px); }
+    .game-wrap {
+      width: 100%;
+      max-width: 460px;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
     h1 {
       margin: 0;
@@ -33,28 +35,24 @@
     }
     .scores { display: flex; gap: 8px; }
     .score-box {
-      min-width: 78px;
-      padding: 8px 12px;
+      min-width: 72px;
+      padding: 8px 10px;
       border-radius: 10px;
       text-align: center;
       color: #fff;
       background: #bbada0;
-      box-shadow: 0 8px 24px rgba(119, 110, 101, .16);
     }
-    .score-box span {
-      display: block;
-      font-size: 12px;
-      opacity: .8;
-    }
+    .score-box span { display: block; font-size: 12px; opacity: .85; }
     .score-box strong { font-size: 22px; }
     .intro {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       color: #776e65;
     }
+    .intro p { margin: 0; line-height: 1.6; }
     button, .home-link {
       border: 0;
       border-radius: 10px;
@@ -65,26 +63,34 @@
       background: #8f7a66;
       text-decoration: none;
       white-space: nowrap;
+      font-family: inherit;
     }
     .board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      padding: 12px;
-      border-radius: 18px;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 16px;
       background: #bbada0;
-      box-shadow: 0 18px 50px rgba(119, 110, 101, .22);
       touch-action: none;
+      user-select: none;
     }
     .cell {
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      font-size: clamp(26px, 8vw, 46px);
-      font-weight: 800;
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      border-radius: 10px;
       background: rgba(238, 228, 218, .35);
       color: #776e65;
+      font-weight: 800;
+    }
+    .cell span {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
     }
     .tile-2 { background: #eee4da; }
     .tile-4 { background: #ede0c8; }
@@ -92,34 +98,32 @@
     .tile-16 { color: #f9f6f2; background: #f59563; }
     .tile-32 { color: #f9f6f2; background: #f67c5f; }
     .tile-64 { color: #f9f6f2; background: #f65e3b; }
-    .tile-128 { color: #f9f6f2; background: #edcf72; font-size: clamp(22px, 7vw, 38px); }
-    .tile-256 { color: #f9f6f2; background: #edcc61; font-size: clamp(22px, 7vw, 38px); }
-    .tile-512 { color: #f9f6f2; background: #edc850; font-size: clamp(22px, 7vw, 38px); }
-    .tile-1024 { color: #f9f6f2; background: #edc53f; font-size: clamp(18px, 6vw, 34px); }
-    .tile-2048 { color: #f9f6f2; background: #edc22e; font-size: clamp(18px, 6vw, 34px); }
-    .status {
-      min-height: 26px;
-      margin: 16px 0;
-      text-align: center;
-      font-weight: 700;
-      color: #776e65;
-    }
+    .tile-128 { color: #f9f6f2; background: #edcf72; }
+    .tile-256 { color: #f9f6f2; background: #edcc61; }
+    .tile-512 { color: #f9f6f2; background: #edc850; }
+    .tile-1024 { color: #f9f6f2; background: #edc53f; }
+    .tile-2048 { color: #f9f6f2; background: #edc22e; }
+    .tile-128 span, .tile-256 span, .tile-512 span { font-size: 32px; }
+    .tile-1024 span, .tile-2048 span { font-size: 26px; }
     .controls {
       display: grid;
-      grid-template-columns: repeat(3, 56px);
+      grid-template-columns: repeat(3, 58px);
       justify-content: center;
       gap: 8px;
-      margin: 16px 0 6px;
+      margin: 16px 0 8px;
     }
-    .controls button {
-      height: 46px;
-      padding: 0;
-      font-size: 20px;
-    }
+    .controls button { height: 46px; padding: 0; font-size: 22px; }
     .controls .up { grid-column: 2; }
     .controls .left { grid-column: 1; }
     .controls .down { grid-column: 2; }
     .controls .right { grid-column: 3; }
+    .status {
+      min-height: 26px;
+      margin: 12px 0;
+      text-align: center;
+      font-weight: 700;
+      color: #776e65;
+    }
     .actions {
       display: flex;
       justify-content: center;
@@ -131,7 +135,9 @@
       h1 { font-size: 44px; }
       .topbar { align-items: flex-start; }
       .scores { flex-direction: column; }
-      .board { gap: 9px; padding: 9px; }
+      .cell span { font-size: 30px; }
+      .tile-128 span, .tile-256 span, .tile-512 span { font-size: 25px; }
+      .tile-1024 span, .tile-2048 span { font-size: 21px; }
     }
   </style>
 </head>
@@ -145,158 +151,206 @@
       </div>
     </section>
     <section class="intro">
-      <p>用方向键、WASD 或滑动移动方块，合成 2048。</p>
-      <button id="restart">新游戏</button>
+      <p>用方向键、WASD、滑动或下面按钮移动方块。</p>
+      <button type="button" onclick="newGame()">新游戏</button>
     </section>
     <section class="board" id="board" aria-label="2048 游戏棋盘"></section>
     <section class="controls" aria-label="方向控制">
-      <button class="up" data-move="up" aria-label="向上">↑</button>
-      <button class="left" data-move="left" aria-label="向左">←</button>
-      <button class="down" data-move="down" aria-label="向下">↓</button>
-      <button class="right" data-move="right" aria-label="向右">→</button>
+      <button type="button" class="up" onclick="move('up')">↑</button>
+      <button type="button" class="left" onclick="move('left')">←</button>
+      <button type="button" class="down" onclick="move('down')">↓</button>
+      <button type="button" class="right" onclick="move('right')">→</button>
     </section>
-    <p class="status" id="status"></p>
+    <p class="status" id="status">游戏加载中...</p>
     <section class="actions">
       <a class="home-link" href="/myblog/">返回首页</a>
-      <button id="restart-bottom">重新开始</button>
+      <button type="button" onclick="newGame()">重新开始</button>
     </section>
   </main>
   <script>
-    const size = 4;
-    const boardEl = document.getElementById('board');
-    const scoreEl = document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    const statusEl = document.getElementById('status');
-    const restartEls = [document.getElementById('restart'), document.getElementById('restart-bottom')];
-    let board = [];
-    let score = 0;
-    let best = Number(localStorage.getItem('myblog-2048-best') || 0);
-    let gameOver = false;
+    var size = 4;
+    var board = [];
+    var score = 0;
+    var best = 0;
+    var over = false;
+    var startX = 0;
+    var startY = 0;
 
-    function startGame() {
-      board = Array.from({ length: size }, () => Array(size).fill(0));
+    function getBest() {
+      try { return Number(window.localStorage.getItem('myblog-2048-best') || 0); }
+      catch (e) { return 0; }
+    }
+
+    function saveBest(value) {
+      try { window.localStorage.setItem('myblog-2048-best', String(value)); }
+      catch (e) {}
+    }
+
+    function newGame() {
+      board = [];
+      for (var r = 0; r < size; r++) {
+        board[r] = [];
+        for (var c = 0; c < size; c++) board[r][c] = 0;
+      }
       score = 0;
-      gameOver = false;
-      statusEl.textContent = '';
+      over = false;
+      best = getBest();
+      document.getElementById('status').innerHTML = '游戏开始，合成 2048！';
       addTile();
       addTile();
       draw();
     }
 
     function addTile() {
-      const empty = [];
-      for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          if (!board[r][c]) empty.push([r, c]);
+      var empty = [];
+      for (var r = 0; r < size; r++) {
+        for (var c = 0; c < size; c++) {
+          if (board[r][c] === 0) empty.push({ r: r, c: c });
         }
       }
-      if (!empty.length) return;
-      const [r, c] = empty[Math.floor(Math.random() * empty.length)];
-      board[r][c] = Math.random() < 0.9 ? 2 : 4;
+      if (empty.length === 0) return;
+      var spot = empty[Math.floor(Math.random() * empty.length)];
+      board[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
     }
 
     function draw() {
+      var boardEl = document.getElementById('board');
       boardEl.innerHTML = '';
-      board.flat().forEach(value => {
-        const cell = document.createElement('div');
-        cell.className = 'cell' + (value ? ` tile-${Math.min(value, 2048)}` : '');
-        cell.textContent = value || '';
-        boardEl.appendChild(cell);
-      });
-      scoreEl.textContent = score;
-      best = Math.max(best, score);
-      localStorage.setItem('myblog-2048-best', String(best));
-      bestEl.textContent = best;
-      if (board.flat().includes(2048) && !gameOver) statusEl.textContent = '太棒了，你合成了 2048！还可以继续挑战更高分。';
+      for (var r = 0; r < size; r++) {
+        for (var c = 0; c < size; c++) {
+          var value = board[r][c];
+          var cell = document.createElement('div');
+          cell.className = 'cell' + (value ? ' tile-' + Math.min(value, 2048) : '');
+          var span = document.createElement('span');
+          span.innerHTML = value ? String(value) : '';
+          cell.appendChild(span);
+          boardEl.appendChild(cell);
+        }
+      }
+      document.getElementById('score').innerHTML = String(score);
+      if (score > best) {
+        best = score;
+        saveBest(best);
+      }
+      document.getElementById('best').innerHTML = String(best);
     }
 
     function mergeLine(line) {
-      const values = line.filter(Boolean);
-      const merged = [];
-      for (let i = 0; i < values.length; i++) {
-        if (values[i] === values[i + 1]) {
-          const next = values[i] * 2;
-          merged.push(next);
-          score += next;
-          i++;
+      var values = [];
+      var result = [];
+      for (var i = 0; i < line.length; i++) {
+        if (line[i] !== 0) values.push(line[i]);
+      }
+      for (var j = 0; j < values.length; j++) {
+        if (values[j] === values[j + 1]) {
+          var merged = values[j] * 2;
+          result.push(merged);
+          score += merged;
+          j++;
         } else {
-          merged.push(values[i]);
+          result.push(values[j]);
         }
       }
-      while (merged.length < size) merged.push(0);
-      return merged;
+      while (result.length < size) result.push(0);
+      return result;
+    }
+
+    function boardText() {
+      var text = '';
+      for (var r = 0; r < size; r++) text += board[r].join(',') + ';';
+      return text;
     }
 
     function move(direction) {
-      if (gameOver) return;
-      const before = JSON.stringify(board);
-      if (direction === 'left') board = board.map(mergeLine);
-      if (direction === 'right') board = board.map(row => mergeLine([...row].reverse()).reverse());
+      if (over) return;
+      var before = boardText();
+      var r, c, line, merged;
+
+      if (direction === 'left') {
+        for (r = 0; r < size; r++) board[r] = mergeLine(board[r]);
+      }
+      if (direction === 'right') {
+        for (r = 0; r < size; r++) {
+          line = board[r].slice().reverse();
+          board[r] = mergeLine(line).reverse();
+        }
+      }
       if (direction === 'up') {
-        for (let c = 0; c < size; c++) {
-          const merged = mergeLine(board.map(row => row[c]));
-          for (let r = 0; r < size; r++) board[r][c] = merged[r];
+        for (c = 0; c < size; c++) {
+          line = [];
+          for (r = 0; r < size; r++) line.push(board[r][c]);
+          merged = mergeLine(line);
+          for (r = 0; r < size; r++) board[r][c] = merged[r];
         }
       }
       if (direction === 'down') {
-        for (let c = 0; c < size; c++) {
-          const merged = mergeLine(board.map(row => row[c]).reverse()).reverse();
-          for (let r = 0; r < size; r++) board[r][c] = merged[r];
+        for (c = 0; c < size; c++) {
+          line = [];
+          for (r = 0; r < size; r++) line.push(board[r][c]);
+          merged = mergeLine(line.reverse()).reverse();
+          for (r = 0; r < size; r++) board[r][c] = merged[r];
         }
       }
-      if (before !== JSON.stringify(board)) {
+
+      if (before !== boardText()) {
         addTile();
         draw();
+        if (hasValue(2048)) document.getElementById('status').innerHTML = '你已经合成 2048，可以继续挑战更高分！';
         if (!canMove()) {
-          gameOver = true;
-          statusEl.textContent = '游戏结束，点击重新开始再来一局。';
+          over = true;
+          document.getElementById('status').innerHTML = '游戏结束，点击重新开始再来一局。';
         }
       }
     }
 
+    function hasValue(value) {
+      for (var r = 0; r < size; r++) {
+        for (var c = 0; c < size; c++) if (board[r][c] === value) return true;
+      }
+      return false;
+    }
+
     function canMove() {
-      if (board.flat().some(value => value === 0)) return true;
-      for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          if (board[r][c] === board[r][c + 1] || (board[r + 1] && board[r][c] === board[r + 1][c])) return true;
+      for (var r = 0; r < size; r++) {
+        for (var c = 0; c < size; c++) {
+          if (board[r][c] === 0) return true;
+          if (c < size - 1 && board[r][c] === board[r][c + 1]) return true;
+          if (r < size - 1 && board[r][c] === board[r + 1][c]) return true;
         }
       }
       return false;
     }
 
-    const keys = {
-      ArrowLeft: 'left', a: 'left', A: 'left',
-      ArrowRight: 'right', d: 'right', D: 'right',
-      ArrowUp: 'up', w: 'up', W: 'up',
-      ArrowDown: 'down', s: 'down', S: 'down'
+    document.onkeydown = function(event) {
+      event = event || window.event;
+      var key = event.key || event.keyCode;
+      var direction = null;
+      if (key === 'ArrowLeft' || key === 'a' || key === 'A' || key === 37) direction = 'left';
+      if (key === 'ArrowRight' || key === 'd' || key === 'D' || key === 39) direction = 'right';
+      if (key === 'ArrowUp' || key === 'w' || key === 'W' || key === 38) direction = 'up';
+      if (key === 'ArrowDown' || key === 's' || key === 'S' || key === 40) direction = 'down';
+      if (direction) {
+        if (event.preventDefault) event.preventDefault();
+        move(direction);
+        return false;
+      }
     };
 
-    document.addEventListener('keydown', event => {
-      const direction = keys[event.key];
-      if (!direction) return;
-      event.preventDefault();
-      move(direction);
-    });
-
-    let startX = 0;
-    let startY = 0;
-    boardEl.addEventListener('touchstart', event => {
+    document.getElementById('board').ontouchstart = function(event) {
       startX = event.touches[0].clientX;
       startY = event.touches[0].clientY;
-    }, { passive: true });
-    boardEl.addEventListener('touchend', event => {
-      const touch = event.changedTouches[0];
-      const dx = touch.clientX - startX;
-      const dy = touch.clientY - startY;
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
-      move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
-    });
+    };
 
-    document.querySelectorAll('[data-move]').forEach(button => {
-      button.addEventListener('click', () => move(button.dataset.move));
-    });
-    restartEls.forEach(button => button.addEventListener('click', startGame));
-    startGame();
+    document.getElementById('board').ontouchend = function(event) {
+      var touch = event.changedTouches[0];
+      var dx = touch.clientX - startX;
+      var dy = touch.clientY - startY;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
+      if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 'right' : 'left');
+      else move(dy > 0 ? 'down' : 'up');
+    };
+
+    newGame();
   </script>
 </body>
 </html>
