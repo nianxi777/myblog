@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>数独 - 溪_</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      color: #3c4858;
+      background: linear-gradient(135deg, #eef2f7, #dbe6f1);
+    }
+    .game-wrap {
+      width: min(96vw, 820px);
+      max-height: calc(100vh - 24px);
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 230px;
+      gap: 18px;
+      align-items: center;
+    }
+    .board-panel { min-width: 0; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      aspect-ratio: 1;
+      border: 4px solid #2f4154;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #2f4154;
+      box-shadow: 0 18px 40px rgba(31, 49, 68, .18);
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(47, 65, 84, .32);
+      background: #f8fafc;
+      color: #2f4154;
+      font-size: clamp(20px, 6vw, 34px);
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .cell:nth-child(3n) { border-right-width: 3px; }
+    .cell:nth-child(9n) { border-right-width: 1px; }
+    .cell:nth-child(n+19):nth-child(-n+27), .cell:nth-child(n+46):nth-child(-n+54) { border-bottom-width: 3px; }
+    .cell.fixed { color: #fff; background: #2f4154; }
+    .cell.selected { background: #30a9de; color: #fff; }
+    .cell.related { background: #e2e8f0; }
+    .cell.error { color: #fff; background: #c95f6a; }
+    .cell.hint { color: #fff; background: #238fc1; }
+    .side-panel { display: flex; flex-direction: column; gap: 12px; }
+    .topbar { display: flex; flex-direction: column; gap: 10px; }
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 8vh, 50px);
+      line-height: 1;
+      color: #2f4154;
+    }
+    .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .score-box {
+      padding: 7px 9px;
+      border-radius: 10px;
+      text-align: center;
+      color: #fff;
+      background: #2f4154;
+    }
+    .score-box span { display: block; font-size: 12px; opacity: .85; }
+    .score-box strong { font-size: 20px; }
+    p { margin: 0; line-height: 1.45; color: #2f4154; font-size: 14px; }
+    select, button, .home-link {
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #fff;
+      background: #2f4154;
+      text-decoration: none;
+      text-align: center;
+      font-family: inherit;
+      transition: background .2s ease, transform .2s ease;
+    }
+    select { width: 100%; appearance: none; }
+    button:hover, .home-link:hover, select:hover { background: #30a9de; transform: translateY(-1px); }
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .numbers button { height: 38px; padding: 0; font-size: 18px; }
+    .status { min-height: 44px; margin: 0; font-weight: 700; color: #2f4154; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      .game-wrap { width: min(96vw, 430px); display: block; }
+      .side-panel { gap: 8px; margin-top: 10px; }
+      .topbar { flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; }
+      .scores { width: 150px; }
+      .score-box { padding: 5px 8px; }
+      p { font-size: 13px; }
+      .numbers { grid-template-columns: repeat(5, 1fr); }
+      .numbers button { height: 34px; }
+      .status { min-height: 22px; text-align: center; }
+      .actions { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-height: 700px) {
+      body { padding: 8px; }
+      .game-wrap { width: min(96vw, 760px); grid-template-columns: minmax(300px, 1fr) 210px; gap: 12px; }
+      h1 { font-size: 34px; }
+      .side-panel { gap: 8px; }
+      p { font-size: 12px; }
+      .numbers button { height: 32px; }
+      .actions { display: none; }
+    }
+    @media (max-width: 760px) and (max-height: 700px) {
+      .game-wrap { width: min(92vw, 380px); display: block; }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-wrap">
+    <section class="board-panel">
+      <div class="board" id="board" aria-label="数独游戏区域"></div>
+    </section>
+    <aside class="side-panel">
+      <section class="topbar">
+        <h1>数独</h1>
+        <div class="scores">
+          <div class="score-box"><span>用时</span><strong id="time">00:00</strong></div>
+          <div class="score-box"><span>错误</span><strong id="mistakes">0</strong></div>
+        </div>
+      </section>
+      <p>选择空格后输入数字，填满并全部正确即可完成。</p>
+      <select id="difficulty" onchange="newGame()" aria-label="选择难度">
+        <option value="easy">简单</option>
+        <option value="medium">中等</option>
+        <option value="hard">困难</option>
+      </select>
+      <section class="numbers" aria-label="数字输入">
+        <button type="button" onclick="putNumber(1)">1</button>
+        <button type="button" onclick="putNumber(2)">2</button>
+        <button type="button" onclick="putNumber(3)">3</button>
+        <button type="button" onclick="putNumber(4)">4</button>
+        <button type="button" onclick="putNumber(5)">5</button>
+        <button type="button" onclick="putNumber(6)">6</button>
+        <button type="button" onclick="putNumber(7)">7</button>
+        <button type="button" onclick="putNumber(8)">8</button>
+        <button type="button" onclick="putNumber(9)">9</button>
+        <button type="button" onclick="clearCell()">清除</button>
+      </section>
+      <p class="status" id="status">游戏加载中...</p>
+      <section class="actions">
+        <button type="button" onclick="newGame()">新游戏</button>
+        <a class="home-link" href="/myblog/">返回首页</a>
+      </section>
+    </aside>
+  </main>
+  <script>
+    var puzzles = {
+      easy: [
+        {
+          puzzle: '530070000600195000098000060800060003400803001700020006060000280000419005000080079',
+          solution: '534678912672195348198342567859761423426853791713924856961537284287419635345286179'
+        },
+        {
+          puzzle: '200080300060070084030500209000105408000000000402706000301007040720040060004010003',
+          solution: '245981376169273584837564219976125438513498627482736951391657842728349165654812793'
+        }
+      ],
+      medium: [
+        {
+          puzzle: '000260701680070090190004500820100040004602900050003028009300074040050036703018000',
+          solution: '435269781682571493197834562826195347374682915951743628519326874248957136763418259'
+        },
+        {
+          puzzle: '300000000005009000200504000020000700160000058704310600000890100000067080000005437',
+          solution: '397681245645729813281534976823956741169472358754318629536897124412763589978245437'
+        }
+      ],
+      hard: [
+        {
+          puzzle: '000000010400000000020000000000050407008000300001090000300400200050100000000806000',
+          solution: '693784512487512936125963874932651487568247391741398625319475268856129743274836159'
+        },
+        {
+          puzzle: '000900002050123400030000160908000000070000090000000205091000080007439020400007000',
+          solution: '614978532759123468832645179948352617275816394163794285391264857527439621486587913'
+        }
+      ]
+    };
+    var board = [];
+    var fixed = [];
+    var solution = '';
+    var selected = -1;
+    var mistakes = 0;
+    var seconds = 0;
+    var timer = null;
+    var finished = false;
+
+    function pad(value) {
+      return value < 10 ? '0' + value : String(value);
+    }
+
+    function updateTime() {
+      seconds++;
+      document.getElementById('time').innerHTML = pad(Math.floor(seconds / 60)) + ':' + pad(seconds % 60);
+    }
+
+    function newGame() {
+      var level = document.getElementById('difficulty').value;
+      var list = puzzles[level];
+      var item = list[Math.floor(Math.random() * list.length)];
+      board = [];
+      fixed = [];
+      solution = item.solution;
+      selected = -1;
+      mistakes = 0;
+      seconds = 0;
+      finished = false;
+      for (var i = 0; i < 81; i++) {
+        board[i] = item.puzzle.charAt(i) === '0' ? '' : item.puzzle.charAt(i);
+        fixed[i] = item.puzzle.charAt(i) !== '0';
+      }
+      document.getElementById('time').innerHTML = '00:00';
+      document.getElementById('mistakes').innerHTML = '0';
+      document.getElementById('status').innerHTML = '选择空格，开始填写数字。';
+      if (timer) clearInterval(timer);
+      timer = setInterval(updateTime, 1000);
+      draw();
+    }
+
+    function draw() {
+      var html = '';
+      for (var i = 0; i < 81; i++) {
+        var cls = 'cell';
+        if (fixed[i]) cls += ' fixed';
+        if (i === selected) cls += ' selected';
+        else if (selected >= 0 && related(i, selected)) cls += ' related';
+        if (board[i] && board[i] !== solution.charAt(i)) cls += ' error';
+        html += '<div class="' + cls + '" onclick="selectCell(' + i + ')">' + board[i] + '</div>';
+      }
+      document.getElementById('board').innerHTML = html;
+    }
+
+    function related(a, b) {
+      var ar = Math.floor(a / 9);
+      var ac = a % 9;
+      var br = Math.floor(b / 9);
+      var bc = b % 9;
+      return ar === br || ac === bc || (Math.floor(ar / 3) === Math.floor(br / 3) && Math.floor(ac / 3) === Math.floor(bc / 3));
+    }
+
+    function selectCell(index) {
+      if (finished) return;
+      selected = index;
+      draw();
+    }
+
+    function putNumber(num) {
+      if (selected < 0 || fixed[selected] || finished) return;
+      var value = String(num);
+      board[selected] = value;
+      if (value !== solution.charAt(selected)) {
+        mistakes++;
+        document.getElementById('mistakes').innerHTML = String(mistakes);
+        document.getElementById('status').innerHTML = '这个数字不太对，再试试。';
+      } else {
+        document.getElementById('status').innerHTML = '填写正确，继续加油。';
+      }
+      draw();
+      checkComplete();
+    }
+
+    function clearCell() {
+      if (selected < 0 || fixed[selected] || finished) return;
+      board[selected] = '';
+      document.getElementById('status').innerHTML = '已清除当前格子。';
+      draw();
+    }
+
+    function checkComplete() {
+      for (var i = 0; i < 81; i++) {
+        if (board[i] !== solution.charAt(i)) return;
+      }
+      finished = true;
+      clearInterval(timer);
+      document.getElementById('status').innerHTML = '完成！用时 ' + document.getElementById('time').innerHTML + '，错误 ' + mistakes + ' 次。';
+    }
+
+    document.onkeydown = function(event) {
+      event = event || window.event;
+      var key = event.key || event.keyCode;
+      if (key >= '1' && key <= '9') {
+        putNumber(Number(key));
+        return false;
+      }
+      if (key >= 49 && key <= 57) {
+        putNumber(key - 48);
+        return false;
+      }
+      if (key === 'Backspace' || key === 'Delete' || key === 8 || key === 46 || key === '0' || key === 48) {
+        clearCell();
+        return false;
+      }
+    };
+
+    newGame();
+  </script>
+</body>
+</html>
