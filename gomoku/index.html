@@ -20,9 +20,12 @@
         </div>
       </section>
       <p id="intro">人机模式：你执黑先手，电脑执白后手。</p>
-      <button type="button" onclick="newGame()">新游戏</button>
-      <button type="button" onclick="toggleMode()" id="modeBtn">模式：人机</button>
-      <button type="button" onclick="cycleDifficulty()" id="difficultyBtn">难度：简单</button>
+      <section class="game-buttons">
+        <button type="button" onclick="newGame()">新游戏</button>
+        <button type="button" onclick="undoMove()" id="undoBtn">悔棋</button>
+        <button type="button" onclick="toggleMode()" id="modeBtn">模式：人机</button>
+        <button type="button" onclick="cycleDifficulty()" id="difficultyBtn">难度：简单</button>
+      </section>
       <p class="status" id="status">游戏加载中...</p>
       <section class="actions">
         <a class="home-link" href="/myblog/">返回首页</a>

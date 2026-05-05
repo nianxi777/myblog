@@ -12,6 +12,7 @@ var mode = 'ai';
 var difficulty = 'easy';
 var aiThinking = false;
 var aiTimer = null;
+var moveHistory = [];
 var difficulties = ['easy', 'normal', 'hard', 'master'];
 var difficultyNames = { easy: '简单', normal: '标准', hard: '困难', master: '大师' };
 
@@ -28,6 +29,7 @@ function newGame() {
   finished = false;
   blackCount = 0;
   whiteCount = 0;
+  moveHistory = [];
   updateControls();
   updatePanel(mode === 'ai' ? '轮到你落子。' : '黑棋先手，请落子。');
   draw();
@@ -36,6 +38,7 @@ function newGame() {
 function updateControls() {
   document.getElementById('modeBtn').innerHTML = mode === 'ai' ? '模式：人机' : '模式：双人';
   document.getElementById('difficultyBtn').innerHTML = '难度：' + difficultyNames[difficulty];
+  document.getElementById('undoBtn').disabled = moveHistory.length === 0;
   document.getElementById('intro').innerHTML = mode === 'ai' ? '人机模式：你执黑先手，电脑执白后手。' : '双人模式：双方轮流点击交叉点落子。';
 }
 
@@ -138,9 +141,12 @@ function drawPiece(row, col, color) {
 function placePiece(row, col, source) {
   if (finished || aiThinking || board[row][col]) return false;
   if (mode === 'ai' && source !== 'ai' && current !== 'black') return false;
-  board[row][col] = current;
-  if (current === 'black') blackCount++;
+  var placedColor = current;
+  board[row][col] = placedColor;
+  moveHistory.push({ row: row, col: col, color: placedColor, source: source });
+  if (placedColor === 'black') blackCount++;
   else whiteCount++;
+  updateControls();
   draw();
   if (hasWon(row, col, current)) {
     var winner = current === 'black' ? '黑棋' : '白棋';
@@ -159,6 +165,27 @@ function placePiece(row, col, source) {
   if (mode === 'ai' && current === 'white') scheduleAiMove();
   else updatePanel(mode === 'ai' ? '轮到你落子。' : '轮到' + (current === 'black' ? '黑棋' : '白棋') + '落子。');
   return true;
+}
+
+function undoMove() {
+  if (moveHistory.length === 0) return;
+  closeResultModal();
+  if (aiTimer) clearTimeout(aiTimer);
+  aiTimer = null;
+  aiThinking = false;
+  var steps = mode === 'ai' ? (moveHistory.length >= 2 && moveHistory[moveHistory.length - 1].source === 'ai' ? 2 : 1) : 1;
+  for (var i = 0; i < steps; i++) {
+    var move = moveHistory.pop();
+    if (!move) break;
+    board[move.row][move.col] = '';
+    if (move.color === 'black') blackCount--;
+    else whiteCount--;
+  }
+  finished = false;
+  current = mode === 'ai' ? 'black' : (moveHistory.length && moveHistory[moveHistory.length - 1].color === 'black' ? 'white' : 'black');
+  updateControls();
+  draw();
+  updatePanel(moveHistory.length === 0 ? (mode === 'ai' ? '轮到你落子。' : '黑棋先手，请落子。') : (mode === 'ai' ? '已悔棋，轮到你落子。' : '已悔棋，轮到' + (current === 'black' ? '黑棋' : '白棋') + '落子。'));
 }
 
 function scheduleAiMove() {
