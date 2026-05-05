@@ -12,7 +12,7 @@
     .game-wrap { position: relative; z-index: 1; width: min(96vw, 860px); max-height: calc(100vh - 28px); display: grid; grid-template-columns: minmax(320px, 1fr) 244px; gap: 20px; align-items: center; }
     .board-panel { min-width: 0; padding: clamp(10px, 1.8vw, 16px); border: 1px solid rgba(104, 213, 255, .24); border-radius: 26px; background: linear-gradient(145deg, rgba(13, 27, 47, .70), rgba(8, 16, 31, .54)); box-shadow: 0 0 36px rgba(138, 124, 255, .16), 0 28px 70px rgba(0,0,0,.32); backdrop-filter: blur(12px); }
     .board { display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr); aspect-ratio: 1; border: 3px solid rgba(104, 213, 255, .58); border-radius: 18px; overflow: hidden; background: #07111f; box-shadow: inset 0 0 28px rgba(48, 213, 255, .10), 0 0 30px rgba(138, 124, 255, .18); touch-action: manipulation; user-select: none; }
-    .cell { min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; background: rgba(235, 248, 255, .94); color: #07111f; box-shadow: inset 0 0 0 1px rgba(7, 17, 31, .26); font-size: clamp(20px, 6vw, 34px); font-weight: 900; cursor: pointer; transition: background .14s ease, color .14s ease, box-shadow .14s ease, transform .14s ease; }
+    .cell { position: relative; min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; background: rgba(235, 248, 255, .94); color: #07111f; box-shadow: inset 0 0 0 1px rgba(7, 17, 31, .26); font-size: clamp(20px, 6vw, 34px); font-weight: 900; cursor: pointer; transition: background .14s ease, color .14s ease, box-shadow .14s ease, transform .14s ease; }
     .cell:hover { box-shadow: inset 0 0 0 2px rgba(48, 213, 255, .58); }
     .cell.block-right { box-shadow: inset -3px 0 0 #07111f, inset 0 0 0 1px rgba(7, 17, 31, .26); }
     .cell.block-bottom { box-shadow: inset 0 -3px 0 #07111f, inset 0 0 0 1px rgba(7, 17, 31, .26); }
@@ -22,6 +22,9 @@
     .cell.related { color: #eaf8ff; background: rgba(48, 169, 222, .40); }
     .cell.error { color: #fff; background: linear-gradient(135deg, #ff3d71, #b42335); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 0 16px rgba(255,61,113,.35); }
     .cell.hint { color: #fff; background: linear-gradient(135deg, #8a7cff, #30a9de); box-shadow: 0 0 16px rgba(138,124,255,.38); }
+    .notes { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 3px; color: #48dfff; font-size: clamp(9px, 2.6vw, 14px); font-weight: 800; line-height: 1; text-shadow: 0 0 8px rgba(48, 213, 255, .36); }
+    .note { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; }
+    .note-mode { border-color: rgba(246, 200, 95, .72); background: linear-gradient(135deg, rgba(246, 200, 95, .86), rgba(255, 143, 90, .72)); box-shadow: 0 0 24px rgba(246, 200, 95, .26); }
     .side-panel { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid rgba(104, 213, 255, .24); border-radius: 24px; background: rgba(13, 27, 47, .78); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 20px 50px rgba(0,0,0,.28); backdrop-filter: blur(12px); }
     .topbar { display: flex; flex-direction: column; gap: 12px; }
     h1 { margin: 0; font-size: clamp(38px, 8vh, 52px); line-height: 1; color: #eef8ff; letter-spacing: .06em; text-shadow: 0 0 24px rgba(138, 124, 255, .52); }
@@ -101,6 +104,7 @@
         <button type="button" onclick="verifyBoard()">验证</button>
         <button type="button" onclick="newGame()">新游戏</button>
         <button type="button" id="difficultyBtn" onclick="cycleDifficulty()">难度：简单</button>
+        <button type="button" id="noteModeBtn" onclick="toggleNoteMode()">标注：关</button>
         <a class="home-link" href="/myblog/">返回首页</a>
       </section>
     </aside>
@@ -1717,6 +1721,7 @@
       ]
     };
     var board = [];
+    var notes = [];
     var fixed = [];
     var solution = '';
     var currentDifficulty = 'easy';
@@ -1727,6 +1732,7 @@
     var seconds = 0;
     var timer = null;
     var finished = false;
+    var noteMode = false;
 
     function pad(value) {
       return value < 10 ? '0' + value : String(value);
@@ -1798,6 +1804,7 @@
       if (currentPuzzleIndex >= list.length) currentPuzzleIndex = 0;
       var item = list[currentPuzzleIndex];
       board = [];
+      notes = [];
       fixed = [];
       solution = item.solution;
       selected = -1;
@@ -1807,8 +1814,11 @@
       finished = false;
       for (var i = 0; i < 81; i++) {
         board[i] = item.puzzle.charAt(i) === '0' ? '' : item.puzzle.charAt(i);
+        notes[i] = [];
         fixed[i] = item.puzzle.charAt(i) !== '0';
       }
+      noteMode = false;
+      updateNoteModeButton();
       document.getElementById('time').innerHTML = '00:00';
       document.getElementById('mistakes').innerHTML = '0';
       document.getElementById('status').innerHTML = difficultyName(currentDifficulty) + ' · 第 ' + (currentPuzzleIndex + 1) + ' 题，选择空格开始填写。';
@@ -1828,9 +1838,19 @@
         if (i === selected) cls += ' selected';
         else if (selected >= 0 && related(i, selected)) cls += ' related';
         if (errors[i]) cls += ' error';
-        html += '<div class="' + cls + '" onclick="selectCell(' + i + ')">' + board[i] + '</div>';
+        html += '<div class="' + cls + '" onclick="selectCell(' + i + ')">' + cellContent(i) + '</div>';
       }
       document.getElementById('board').innerHTML = html;
+    }
+
+    function cellContent(index) {
+      if (board[index]) return board[index];
+      if (!notes[index] || notes[index].length === 0) return '';
+      var html = '<div class="notes">';
+      for (var n = 1; n <= 9; n++) {
+        html += '<span class="note">' + (notes[index].indexOf(n) >= 0 ? n : '') + '</span>';
+      }
+      return html + '</div>';
     }
 
     function related(a, b) {
@@ -1847,21 +1867,54 @@
       draw();
     }
 
+    function updateNoteModeButton() {
+      var button = document.getElementById('noteModeBtn');
+      if (!button) return;
+      button.innerHTML = noteMode ? '标注：开' : '标注：关';
+      button.className = noteMode ? 'note-mode' : '';
+    }
+
+    function toggleNoteMode() {
+      if (finished) return;
+      noteMode = !noteMode;
+      updateNoteModeButton();
+      document.getElementById('status').innerHTML = noteMode ? '标注模式：点击数字添加或取消小号候选数。' : '普通模式：点击数字填写正式答案。';
+    }
+
     function putNumber(num) {
       if (selected < 0 || fixed[selected] || finished) return;
+      if (noteMode) {
+        if (board[selected]) return;
+        toggleNote(selected, num);
+        errors = [];
+        document.getElementById('mistakes').innerHTML = '0';
+        document.getElementById('status').innerHTML = '已更新当前格子的候选数。';
+        draw();
+        return;
+      }
       board[selected] = String(num);
+      notes[selected] = [];
       errors = [];
       document.getElementById('mistakes').innerHTML = '0';
       document.getElementById('status').innerHTML = '继续填写，完成后点击验证。';
       draw();
     }
 
+    function toggleNote(index, num) {
+      if (!notes[index]) notes[index] = [];
+      var pos = notes[index].indexOf(num);
+      if (pos >= 0) notes[index].splice(pos, 1);
+      else notes[index].push(num);
+      notes[index].sort(function(a, b) { return a - b; });
+    }
+
     function clearCell() {
       if (selected < 0 || fixed[selected] || finished) return;
       board[selected] = '';
+      notes[selected] = [];
       errors = [];
       document.getElementById('mistakes').innerHTML = '0';
-      document.getElementById('status').innerHTML = '已清除当前格子，完成后点击验证。';
+      document.getElementById('status').innerHTML = '已清除当前格子和候选数。';
       draw();
     }
 
@@ -1896,6 +1949,10 @@
     document.onkeydown = function(event) {
       event = event || window.event;
       var key = event.key || event.keyCode;
+      if (key === 'n' || key === 'N') {
+        toggleNoteMode();
+        return false;
+      }
       if (key >= '1' && key <= '9') {
         putNumber(Number(key));
         return false;
