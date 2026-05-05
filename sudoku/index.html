@@ -22,9 +22,10 @@
     .cell.related { color: #eaf8ff; background: rgba(48, 169, 222, .40); }
     .cell.error { color: #fff; background: linear-gradient(135deg, #ff3d71, #b42335); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 0 16px rgba(255,61,113,.35); }
     .cell.hint { color: #fff; background: linear-gradient(135deg, #8a7cff, #30a9de); box-shadow: 0 0 16px rgba(138,124,255,.38); }
-    .notes { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 3px; color: #48dfff; font-size: clamp(9px, 2.6vw, 14px); font-weight: 800; line-height: 1; text-shadow: 0 0 8px rgba(48, 213, 255, .36); }
+    .notes { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 3px; color: #061425; font-size: clamp(11px, 3vw, 16px); font-weight: 900; line-height: 1; text-shadow: none; }
+    .cell.related .notes { color: #eef8ff; text-shadow: 0 0 8px rgba(48, 213, 255, .36); }
+    .cell.selected .notes { color: #061425; text-shadow: none; }
     .note { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; }
-    .note-mode { border-color: rgba(246, 200, 95, .72); background: linear-gradient(135deg, rgba(246, 200, 95, .86), rgba(255, 143, 90, .72)); box-shadow: 0 0 24px rgba(246, 200, 95, .26); }
     .side-panel { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid rgba(104, 213, 255, .24); border-radius: 24px; background: rgba(13, 27, 47, .78); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 20px 50px rgba(0,0,0,.28); backdrop-filter: blur(12px); }
     .topbar { display: flex; flex-direction: column; gap: 12px; }
     h1 { margin: 0; font-size: clamp(38px, 8vh, 52px); line-height: 1; color: #eef8ff; letter-spacing: .06em; text-shadow: 0 0 24px rgba(138, 124, 255, .52); }
@@ -82,17 +83,17 @@
           <div class="score-box"><span>错误</span><strong id="mistakes">0</strong></div>
         </div>
       </section>
-      <p>选择空格后输入数字，全部填完后点击验证。</p>
+      <p>选择空格后点数字标注候选数，长按数字填入正式答案。</p>
       <section class="numbers" aria-label="数字输入">
-        <button type="button" onclick="putNumber(1)">1</button>
-        <button type="button" onclick="putNumber(2)">2</button>
-        <button type="button" onclick="putNumber(3)">3</button>
-        <button type="button" onclick="putNumber(4)">4</button>
-        <button type="button" onclick="putNumber(5)">5</button>
-        <button type="button" onclick="putNumber(6)">6</button>
-        <button type="button" onclick="putNumber(7)">7</button>
-        <button type="button" onclick="putNumber(8)">8</button>
-        <button type="button" onclick="putNumber(9)">9</button>
+        <button type="button" onpointerdown="startNumberPress(1)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(1)">1</button>
+        <button type="button" onpointerdown="startNumberPress(2)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(2)">2</button>
+        <button type="button" onpointerdown="startNumberPress(3)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(3)">3</button>
+        <button type="button" onpointerdown="startNumberPress(4)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(4)">4</button>
+        <button type="button" onpointerdown="startNumberPress(5)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(5)">5</button>
+        <button type="button" onpointerdown="startNumberPress(6)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(6)">6</button>
+        <button type="button" onpointerdown="startNumberPress(7)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(7)">7</button>
+        <button type="button" onpointerdown="startNumberPress(8)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(8)">8</button>
+        <button type="button" onpointerdown="startNumberPress(9)" onpointerup="endNumberPress()" onpointerleave="cancelNumberPress()" onclick="numberClick(9)">9</button>
         <button type="button" onclick="clearCell()">清除</button>
       </section>
       <p class="status" id="status">游戏加载中...</p>
@@ -104,7 +105,6 @@
         <button type="button" onclick="verifyBoard()">验证</button>
         <button type="button" onclick="newGame()">新游戏</button>
         <button type="button" id="difficultyBtn" onclick="cycleDifficulty()">难度：简单</button>
-        <button type="button" id="noteModeBtn" onclick="toggleNoteMode()">标注：关</button>
         <a class="home-link" href="/myblog/">返回首页</a>
       </section>
     </aside>
@@ -1732,7 +1732,8 @@
     var seconds = 0;
     var timer = null;
     var finished = false;
-    var noteMode = false;
+    var pressTimer = null;
+    var longPressed = false;
 
     function pad(value) {
       return value < 10 ? '0' + value : String(value);
@@ -1817,8 +1818,7 @@
         notes[i] = [];
         fixed[i] = item.puzzle.charAt(i) !== '0';
       }
-      noteMode = false;
-      updateNoteModeButton();
+      cancelNumberPress();
       document.getElementById('time').innerHTML = '00:00';
       document.getElementById('mistakes').innerHTML = '0';
       document.getElementById('status').innerHTML = difficultyName(currentDifficulty) + ' · 第 ' + (currentPuzzleIndex + 1) + ' 题，选择空格开始填写。';
@@ -1867,36 +1867,49 @@
       draw();
     }
 
-    function updateNoteModeButton() {
-      var button = document.getElementById('noteModeBtn');
-      if (!button) return;
-      button.innerHTML = noteMode ? '标注：开' : '标注：关';
-      button.className = noteMode ? 'note-mode' : '';
+    function startNumberPress(num) {
+      cancelNumberPress();
+      longPressed = false;
+      pressTimer = setTimeout(function() {
+        longPressed = true;
+        putNumber(num);
+      }, 520);
     }
 
-    function toggleNoteMode() {
-      if (finished) return;
-      noteMode = !noteMode;
-      updateNoteModeButton();
-      document.getElementById('status').innerHTML = noteMode ? '标注模式：点击数字添加或取消小号候选数。' : '普通模式：点击数字填写正式答案。';
+    function endNumberPress() {
+      if (pressTimer) clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+
+    function cancelNumberPress() {
+      if (pressTimer) clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+
+    function numberClick(num) {
+      if (longPressed) {
+        longPressed = false;
+        return;
+      }
+      toggleNoteNumber(num);
+    }
+
+    function toggleNoteNumber(num) {
+      if (selected < 0 || fixed[selected] || finished || board[selected]) return;
+      toggleNote(selected, num);
+      errors = [];
+      document.getElementById('mistakes').innerHTML = '0';
+      document.getElementById('status').innerHTML = '已更新当前格子的候选数，长按数字可填入答案。';
+      draw();
     }
 
     function putNumber(num) {
       if (selected < 0 || fixed[selected] || finished) return;
-      if (noteMode) {
-        if (board[selected]) return;
-        toggleNote(selected, num);
-        errors = [];
-        document.getElementById('mistakes').innerHTML = '0';
-        document.getElementById('status').innerHTML = '已更新当前格子的候选数。';
-        draw();
-        return;
-      }
       board[selected] = String(num);
       notes[selected] = [];
       errors = [];
       document.getElementById('mistakes').innerHTML = '0';
-      document.getElementById('status').innerHTML = '继续填写，完成后点击验证。';
+      document.getElementById('status').innerHTML = '已填入答案，完成后点击验证。';
       draw();
     }
 
@@ -1949,16 +1962,14 @@
     document.onkeydown = function(event) {
       event = event || window.event;
       var key = event.key || event.keyCode;
-      if (key === 'n' || key === 'N') {
-        toggleNoteMode();
-        return false;
-      }
       if (key >= '1' && key <= '9') {
-        putNumber(Number(key));
+        if (event.shiftKey) putNumber(Number(key));
+        else toggleNoteNumber(Number(key));
         return false;
       }
       if (key >= 49 && key <= 57) {
-        putNumber(key - 48);
+        if (event.shiftKey) putNumber(key - 48);
+        else toggleNoteNumber(key - 48);
         return false;
       }
       if (key === 'Backspace' || key === 'Delete' || key === 8 || key === 46 || key === '0' || key === 48) {
