@@ -40,7 +40,7 @@ button:active, .home-link:active { transform: translateY(0); }
 @media (max-width: 760px) {
   html, body { height: 100dvh; overflow: hidden; }
   body { min-height: 100dvh; padding: 6px; align-items: center; }
-  .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
+  .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
   .board-panel { padding: 6px; border-radius: 18px; }
   .board { border-width: 2px; border-radius: 14px; }
   .cell { font-size: clamp(17px, 5.6vw, 28px); }

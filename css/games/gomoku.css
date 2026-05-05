@@ -39,7 +39,7 @@ button:disabled { cursor: not-allowed; opacity: .46; transform: none; filter: no
 @media (max-width: 700px) {
   html, body { height: 100dvh; overflow: hidden; }
   body { min-height: 100dvh; padding: 6px; align-items: center; }
-  .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
+  .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
   .board-panel { padding: 6px; border-radius: 18px; }
   canvas { border-radius: 14px; }
   .side-panel { gap: 5px; padding: 8px; border-radius: 16px; }
