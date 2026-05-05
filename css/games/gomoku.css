@@ -36,7 +36,7 @@ button:disabled { cursor: not-allowed; opacity: .46; transform: none; filter: no
 .result-card h2 { margin: 0 0 12px; font-size: 30px; text-shadow: 0 0 22px rgba(48, 213, 255, .46); }
 .result-card p { margin-bottom: 20px; color: #d8edff; }
 .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   html, body { height: 100dvh; overflow: hidden; }
   body { min-height: 100dvh; padding: 6px; align-items: center; }
   .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
@@ -62,7 +62,7 @@ button:disabled { cursor: not-allowed; opacity: .46; transform: none; filter: no
   .side-panel { gap: 8px; padding: 12px; }
   p { font-size: 12px; }
 }
-@media (max-width: 700px) and (max-height: 700px) {
+@media (max-width: 760px) and (max-height: 700px) {
   .game-wrap { width: min(94vw, 330px); }
   #intro, .actions { display: none; }
   .side-panel { gap: 4px; padding: 6px; }

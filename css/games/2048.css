@@ -59,7 +59,7 @@ button:active, .home-link:active { transform: translateY(0); }
 .status { min-height: 44px; margin: 0; text-align: left; font-weight: 800; line-height: 1.45; color: #d8edff; }
 .actions { display: flex; flex-direction: column; gap: 10px; }
 .actions .home-link, .actions button, .intro button { text-align: center; width: 100%; }
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   html, body { height: 100dvh; overflow: hidden; }
   body { min-height: 100dvh; padding: 6px; align-items: center; }
   .game-wrap { width: min(96vw, 390px); max-height: calc(100dvh - 12px); display: grid; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; }
@@ -93,7 +93,7 @@ button:active, .home-link:active { transform: translateY(0); }
   .intro p { font-size: 12px; }
   .actions { display: none; }
 }
-@media (max-width: 700px) and (max-height: 700px) {
+@media (max-width: 760px) and (max-height: 700px) {
   .game-wrap { width: min(94vw, 330px); }
   .intro p, .actions { display: none; }
   .side-panel { gap: 4px; padding: 6px; }
